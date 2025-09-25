@@ -1,5 +1,16 @@
 import { Request, Response } from "express";
 import User from "../models/user.model";
+
+export const wakeUp = async (req: Request, res: Response) => {
+  try {
+    const now = new Date();
+    console.log(`Called wake up api at ${now.toISOString()}`);
+    res.status(201).json({ message: "Api wakeUp : OK" });
+  } catch (err) {
+    res.status(400).json({ error: "api wakeUp : Error" });
+  }
+};
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
