@@ -13,8 +13,18 @@ export const wakeUp = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
-    const user = new User({ name, email, password });
+    const { name, surname, email, password, avatarColor, dateOfBirth } =
+      req.body;
+    const dateInDate = new Date(dateOfBirth);
+    dateInDate.setUTCHours(0, 0, 0, 0);
+    const user = new User({
+      name,
+      surname,
+      email,
+      password,
+      avatarColor,
+      dateOfBirth: dateInDate,
+    });
     await user.save();
     res.status(201).json({ message: "Utente registrato correttamente" });
   } catch (err) {

@@ -1,18 +1,25 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcrypt";
+import { AvatarColor } from "../enums/avatar-color.enum";
 
 export interface IUser extends Document {
   name: string;
+  surname: string;
   email: string;
   password: string;
+  avatarColor: AvatarColor;
+  dateOfBirth: Date;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const UserSchema = new Schema<IUser>({
   name: { type: String, required: true },
+  surname: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  avatarColor: { type: String, required: true },
+  dateOfBirth: { type: Date, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
