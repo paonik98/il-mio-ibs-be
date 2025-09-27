@@ -1,13 +1,16 @@
 import { Request, Response } from "express";
 import User from "../models/user.model";
+import { sendError, sendSuccess } from "../utils/response";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/jwt";
 
 export const wakeUp = async (req: Request, res: Response) => {
   try {
     const now = new Date();
     console.log(`Called wake up api at ${now.toISOString()}`);
-    res.status(201).json({ message: "Api wakeUp : OK" });
+    return sendSuccess(res, { message: "Api wakeUp : OK" });
   } catch (err) {
-    res.status(400).json({ error: "api wakeUp : Error" });
+    return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -26,9 +29,9 @@ export const register = async (req: Request, res: Response) => {
       dateOfBirth: dateInDate,
     });
     await user.save();
-    res.status(201).json({ message: "Utente registrato correttamente" });
+    return sendSuccess(res, user, "User registered successfully");
   } catch (err) {
-    res.status(400).json({ error: "Errore durante la registrazione" });
+    return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -36,16 +39,23 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ error: "Email o password non corretti" });
+    if (!user) return sendError(res, 400, "ERROR_SERVER", "Email not found ");
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch)
-      return res.status(400).json({ error: "Email o password non corretti" });
+      return sendError(res, 400, "ERROR_SERVER", "Password is incorrect ");
 
     // Qui puoi generare un token JWT se vuoi
-    res.json({ message: "Login riuscito", userId: user._id });
+    const { name, surname, avatarColor } = user;
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+    return sendSuccess(
+      res,
+      { name, surname, avatarColor, token },
+      "Login success"
+    );
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };

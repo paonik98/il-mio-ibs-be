@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db-mongo";
 import router from "./routes";
 import cors from "cors";
+import { errorMiddleware } from "./middlewares/error.middleware";
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api", router);
+
+// Error handling
+app.use(errorMiddleware);
 
 app.listen(PORT, async () => {
   await connectDB();
