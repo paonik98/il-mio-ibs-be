@@ -6,7 +6,6 @@ import { sendError, sendSuccess } from "../utils/response";
 export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await User.find().select("-password"); // esclude password
-    res.json();
     return sendSuccess(res, users, "getUsers success");
   } catch (err) {
     return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
@@ -17,7 +16,7 @@ export const getUsers = async (_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
-    if (!user) return res.status(404).json({ error: "Utente non trovato" });
+    if (!user) return sendError(res, 404, "ERROR_SERVER", "Utente non trovato");
     return sendSuccess(res, user, "getUserById success");
   } catch (err) {
     return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
@@ -32,7 +31,7 @@ export const updateUser = async (req: Request, res: Response) => {
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     }).select("-password");
-    if (!user) return res.status(404).json({ error: "Utente non trovato" });
+    if (!user) return sendError(res, 404, "ERROR_SERVER", "Utente non trovato");
     return sendSuccess(res, user, "updateUser success");
   } catch (err) {
     return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
@@ -43,8 +42,7 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ error: "Utente non trovato" });
-    res.json({ message: "Utente eliminato correttamente" });
+    if (!user) return sendError(res, 404, "ERROR_SERVER", "Utente non trovato");
     return sendSuccess(res, user, "deleteUser success");
   } catch (err) {
     return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
