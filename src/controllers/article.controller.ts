@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import Article from "../models/article.model";
+import { sendError, sendSuccess } from "../utils/response";
 
 // Lista tutti gli articoli
 export const getArticles = async (_req: Request, res: Response) => {
   try {
     const articles = await Article.find().populate("author", "name email");
-    res.json(articles);
+    return sendSuccess(res, articles, "getArticles success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -19,10 +20,10 @@ export const getArticleById = async (req: Request, res: Response) => {
       "name email"
     );
     if (!article)
-      return res.status(404).json({ error: "Articolo non trovato" });
-    res.json(article);
+      return sendError(res, 404, "ERROR_SERVER", "Articolo non trovato");
+    return sendSuccess(res, article, "getArticleById success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -32,9 +33,9 @@ export const createArticle = async (req: Request, res: Response) => {
     const { title, content, author } = req.body;
     const article = new Article({ title, content, author });
     await article.save();
-    res.status(201).json(article);
+    return sendSuccess(res, article, "createArticle success");
   } catch (err) {
-    res.status(400).json({ error: "Errore nella creazione dell'articolo" });
+    return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -46,10 +47,10 @@ export const updateArticle = async (req: Request, res: Response) => {
       new: true,
     }).populate("author", "name email");
     if (!article)
-      return res.status(404).json({ error: "Articolo non trovato" });
-    res.json(article);
+      return sendError(res, 404, "ERROR_SERVER", "Articolo non trovato");
+    return sendSuccess(res, article, "updateArticle success");
   } catch (err) {
-    res.status(400).json({ error: "Errore nell'aggiornamento dell'articolo" });
+    return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -58,9 +59,9 @@ export const deleteArticle = async (req: Request, res: Response) => {
   try {
     const article = await Article.findByIdAndDelete(req.params.id);
     if (!article)
-      return res.status(404).json({ error: "Articolo non trovato" });
-    res.json({ message: "Articolo eliminato correttamente" });
+      return sendError(res, 404, "ERROR_SERVER", "Articolo non trovato");
+    return sendSuccess(res, article, "deleteArticle success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
   }
 };

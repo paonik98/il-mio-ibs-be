@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import User from "../models/user.model";
+import { sendError, sendSuccess } from "../utils/response";
 
 // Lista tutti gli utenti
 export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await User.find().select("-password"); // esclude password
-    res.json(users);
+    res.json();
+    return sendSuccess(res, users, "getUsers success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -16,9 +18,9 @@ export const getUserById = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ error: "Utente non trovato" });
-    res.json(user);
+    return sendSuccess(res, user, "getUserById success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -31,9 +33,9 @@ export const updateUser = async (req: Request, res: Response) => {
       new: true,
     }).select("-password");
     if (!user) return res.status(404).json({ error: "Utente non trovato" });
-    res.json(user);
+    return sendSuccess(res, user, "updateUser success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
 
@@ -43,7 +45,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: "Utente non trovato" });
     res.json({ message: "Utente eliminato correttamente" });
+    return sendSuccess(res, user, "deleteUser success");
   } catch (err) {
-    res.status(500).json({ error: "Errore server" });
+    return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
 };
