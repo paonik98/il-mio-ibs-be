@@ -4,6 +4,7 @@ import { connectDB } from "./config/db-mongo";
 import router from "./routes";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import { requestLogger } from "./middlewares/requst-logger.middleware";
 
 dotenv.config();
 const app = express();
@@ -12,6 +13,7 @@ app.use(cors());
 
 // Middleware
 app.use(express.json());
+app.use(requestLogger);
 
 // Routes
 app.use("/api", router);
