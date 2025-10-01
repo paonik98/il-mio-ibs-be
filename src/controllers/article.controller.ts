@@ -30,8 +30,25 @@ export const getArticleById = async (req: Request, res: Response) => {
 // Crea articolo
 export const createArticle = async (req: Request, res: Response) => {
   try {
-    const { title, content, author } = req.body;
-    const article = new Article({ title, content, author });
+    const {
+      title,
+      content,
+      author,
+      userName,
+      userAge,
+      avatarColor,
+      createdAt,
+    } = req.body;
+
+    const article = new Article({
+      title,
+      content,
+      author,
+      userName,
+      userAge,
+      avatarColor,
+      createdAt,
+    });
     await article.save();
     return sendSuccess(res, article, "createArticle success");
   } catch (err) {
