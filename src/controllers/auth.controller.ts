@@ -7,7 +7,6 @@ import { JWT_SECRET, JWT_EXPIRES_IN } from "../config/jwt";
 export const wakeUp = async (req: Request, res: Response) => {
   try {
     const now = new Date();
-    console.log(`Called wake up api at ${now.toISOString()}`);
     return sendSuccess(res, { message: "Api wakeUp : OK" });
   } catch (err) {
     return sendError(res, 400, "ERROR_SERVER", (err as Error).message);
