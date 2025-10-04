@@ -9,7 +9,16 @@ import { requestLogger } from "./middlewares/requst-logger.middleware";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(cors());
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "https://nome-progetto.vercel.app",
+  process.env.FRONTEND_LOCAL || "http://localhost:3000",
+];
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 
 // Middleware
 app.use(express.json());
