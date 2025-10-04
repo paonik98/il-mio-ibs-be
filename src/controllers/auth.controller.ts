@@ -45,15 +45,11 @@ export const login = async (req: Request, res: Response) => {
       return sendError(res, 400, "ERROR_SERVER", "Password is incorrect ");
 
     // Qui puoi generare un token JWT se vuoi
-    const { name, surname, avatarColor } = user;
+    const { name, surname, _id } = user;
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
-    return sendSuccess(
-      res,
-      { name, surname, avatarColor, token },
-      "Login success"
-    );
+    return sendSuccess(res, { name, surname, _id, token }, "Login success");
   } catch (err) {
     return sendError(res, 500, "ERROR_SERVER", (err as Error).message);
   }
