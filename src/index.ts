@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_LOCAL = process.env.FRONTEND_LOCAL;
 
 if (process.env.NODE_ENV === "prod") {
   console.log("🚀 CORS in modalità produzione");
@@ -20,6 +21,7 @@ if (process.env.NODE_ENV === "prod") {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
         if (origin === FRONTEND_URL) return callback(null, true);
+        if (origin === FRONTEND_LOCAL) return callback(null, true);
 
         console.warn(`❌ Richiesta CORS bloccata da origine: ${origin}`);
         return callback(new Error("Not allowed by CORS"));
